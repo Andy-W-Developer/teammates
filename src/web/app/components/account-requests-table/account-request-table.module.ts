@@ -7,6 +7,7 @@ import { EditRequestModalComponent } from './admin-edit-request-modal/admin-edit
 import {
   RejectWithReasonModalComponent,
 } from './admin-reject-with-reason-modal/admin-reject-with-reason-modal.component';
+import { AjaxLoadingModule } from '../ajax-loading/ajax-loading.module';
 import { Pipes } from '../../pipes/pipes.module';
 import { RichTextEditorModule } from '../rich-text-editor/rich-text-editor.module';
 
@@ -27,6 +28,7 @@ import { RichTextEditorModule } from '../rich-text-editor/rich-text-editor.modul
     FormsModule,
     NgbTooltipModule,
     NgbDropdownModule,
+    AjaxLoadingModule,
     Pipes,
     RichTextEditorModule,
   ],

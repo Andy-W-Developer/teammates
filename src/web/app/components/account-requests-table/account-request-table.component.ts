@@ -89,7 +89,9 @@ export class AccountRequestTableComponent implements OnInit {
     }
   }
 
-  editAccountRequest(accountRequest: AccountRequestTableRowModel): void {
+  editAccountRequest(accountRequest: AccountRequestTableRowModel, index: number): void {
+    this.editStatuses[index].isEditing = true;
+
     const modalRef: NgbModalRef = this.ngbModal.open(EditRequestModalComponent);
     modalRef.componentInstance.accountRequestName = accountRequest.name;
     modalRef.componentInstance.accountRequestEmail = accountRequest.email;
@@ -113,21 +115,29 @@ export class AccountRequestTableComponent implements OnInit {
           accountRequest.name = resp.name;
           accountRequest.email = resp.email;
           accountRequest.instituteAndCountry = resp.institute;
+
+          this.editStatuses[index].isEditing = false;
           this.statusMessageService.showSuccessToast('Account request was successfully updated.');
         },
         error: (resp: ErrorMessageOutput) => {
           this.statusMessageService.showErrorToast(resp.error.message);
         },
       });
-    }, () => {});
+    }, () => {
+      this.editStatuses[index].isEditing = false;
+    });
   }
 
-  approveAccountRequest(accountRequest: AccountRequestTableRowModel): void {
+  approveAccountRequest(accountRequest: AccountRequestTableRowModel, index: number): void {
+    this.editStatuses[index].isApproving = true;
+
     this.accountService.approveAccountRequest(accountRequest.id, accountRequest.name,
         accountRequest.email, accountRequest.instituteAndCountry)
     .subscribe({
       next: (resp : AccountRequest) => {
         accountRequest.status = resp.status;
+
+        this.editStatuses[index].isApproving = false;
         this.statusMessageService.showSuccessToast(
           `Account request was successfully approved. Email has been sent to ${accountRequest.email}.`,
         );
@@ -138,7 +148,9 @@ export class AccountRequestTableComponent implements OnInit {
     });
   }
 
-  resetAccountRequest(accountRequest: AccountRequestTableRowModel): void {
+  resetAccountRequest(accountRequest: AccountRequestTableRowModel, index: number): void {
+    this.editStatuses[index].isResetting = true;
+
     const modalContent = `Are you sure you want to reset the account request for
         <strong>${accountRequest.name}</strong> with email <strong>${accountRequest.email}</strong> from
         <strong>${accountRequest.instituteAndCountry}</strong>?
@@ -150,6 +162,7 @@ export class AccountRequestTableComponent implements OnInit {
       this.accountService.resetAccountRequest(accountRequest.id)
         .subscribe({
           next: () => {
+            this.editStatuses[index].isResetting = false;
             this.statusMessageService
                 .showSuccessToast(`Reset successful. An email has been sent to ${accountRequest.email}.`);
             accountRequest.registeredAtText = '';
@@ -158,10 +171,14 @@ export class AccountRequestTableComponent implements OnInit {
             this.statusMessageService.showErrorToast(resp.error.message);
           },
         });
-    }, () => {});
+    }, () => {
+      this.editStatuses[index].isResetting = false;
+    });
   }
 
-  deleteAccountRequest(accountRequest: AccountRequestTableRowModel): void {
+  deleteAccountRequest(accountRequest: AccountRequestTableRowModel, index: number): void {
+    this.editStatuses[index].isDeleting = true;
+
     const modalContent: string = `Are you sure you want to <strong>delete</strong> the account request for
         <strong>${accountRequest.name}</strong> with email <strong>${accountRequest.email}</strong> from
         <strong>${accountRequest.instituteAndCountry}</strong>?`;
@@ -172,6 +189,7 @@ export class AccountRequestTableComponent implements OnInit {
       this.accountService.deleteAccountRequest(accountRequest.id)
       .subscribe({
         next: (resp: MessageOutput) => {
+          this.editStatuses[index].isDeleting = false;
           this.statusMessageService.showSuccessToast(resp.message);
           this.accountRequests = this.accountRequests.filter((x: AccountRequestTableRowModel) => x !== accountRequest);
         },
@@ -179,7 +197,9 @@ export class AccountRequestTableComponent implements OnInit {
           this.statusMessageService.showErrorToast(resp.error.message);
         },
       });
-    }, () => {});
+    }, () => {
+      this.editStatuses[index].isDeleting = false;
+    });
   }
 
   viewAccountRequest(accountRequest: AccountRequestTableRowModel): void {
@@ -190,11 +210,15 @@ export class AccountRequestTableComponent implements OnInit {
     modalRef.result.then(() => {}, () => {});
   }
 
-  rejectAccountRequest(accountRequest: AccountRequestTableRowModel): void {
+  rejectAccountRequest(accountRequest: AccountRequestTableRowModel, index: number): void {
+    this.editStatuses[index].isRejecting = true;
+
     this.accountService.rejectAccountRequest(accountRequest.id)
     .subscribe({
       next: (resp : AccountRequest) => {
         accountRequest.status = resp.status;
+
+        this.editStatuses[index].isRejecting = false;
         this.statusMessageService.showSuccessToast('Account request was successfully rejected.');
         },
       error: (resp: ErrorMessageOutput) => {
@@ -203,7 +227,9 @@ export class AccountRequestTableComponent implements OnInit {
     });
   }
 
-  rejectAccountRequestWithReason(accountRequest: AccountRequestTableRowModel): void {
+  rejectAccountRequestWithReason(accountRequest: AccountRequestTableRowModel, index: number): void {
+    this.editStatuses[index].isRejecting = true;
+
     const modalRef: NgbModalRef = this.ngbModal.open(RejectWithReasonModalComponent);
     modalRef.componentInstance.accountRequestName = accountRequest.name;
     modalRef.componentInstance.accountRequestEmail = accountRequest.email;
@@ -214,6 +240,8 @@ export class AccountRequestTableComponent implements OnInit {
       .subscribe({
         next: (resp: AccountRequest) => {
           accountRequest.status = resp.status;
+
+          this.editStatuses[index].isRejecting = false;
           this.statusMessageService.showSuccessToast(
             `Account request was successfully rejected. Email has been sent to ${accountRequest.email}.`,
           );
@@ -222,7 +250,9 @@ export class AccountRequestTableComponent implements OnInit {
           this.statusMessageService.showErrorToast(resp.error.message);
         },
       });
-    }, () => {});
+    }, () => {
+      this.editStatuses[index].isRejecting = false;
+    });
   }
 
   trackAccountRequest(accountRequest: AccountRequestTableRowModel): string {
