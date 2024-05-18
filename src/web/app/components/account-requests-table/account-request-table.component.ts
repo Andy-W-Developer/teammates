@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbModalRef, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AccountRequestTableRowModel } from './account-request-table-model';
 import { EditRequestModalComponentResult } from './admin-edit-request-modal/admin-edit-request-modal-model';
@@ -36,7 +36,7 @@ interface EditStatus {
   animations: [collapseAnim],
 })
 
-export class AccountRequestTableComponent {
+export class AccountRequestTableComponent implements OnInit {
 
   @Input()
   accountRequests: AccountRequestTableRowModel[] = [];
@@ -53,6 +53,10 @@ export class AccountRequestTableComponent {
     private ngbModal: NgbModal,
   ) {}
 
+  ngOnInit(): void {
+    this.createEditStatuses();
+  }
+
   /**
    * Shows all account requests' links in the page.
    */
@@ -68,6 +72,20 @@ export class AccountRequestTableComponent {
   hideAllAccountRequestsLinks(): void {
     for (const accountRequest of this.accountRequests) {
       accountRequest.showLinks = false;
+    }
+  }
+
+  createEditStatuses(): void {
+    for (let i = 0; i < this.accountRequests.length; i++) {
+      const newEditStatus: EditStatus = {
+        isEditing: false,
+        isApproving: false,
+        isResetting: false,
+        isDeleting: false,
+        isRejecting: false,
+      };
+
+      this.editStatuses.push(newEditStatus);
     }
   }
 
