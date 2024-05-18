@@ -18,6 +18,14 @@ import { ErrorMessageOutput } from '../../error-message-output';
 import { SimpleModalType } from '../simple-modal/simple-modal-type';
 import { collapseAnim } from '../teammates-common/collapse-anim';
 
+interface EditStatus {
+  isEditing: boolean;
+  isApproving: boolean;
+  isResetting: boolean;
+  isDeleting: boolean;
+  isRejecting: boolean;
+}
+
 /**
  * Account requests table component.
  */
@@ -35,6 +43,8 @@ export class AccountRequestTableComponent {
 
   @Input()
   searchString = '';
+
+  editStatuses: EditStatus[] = [];
 
   constructor(
     private statusMessageService: StatusMessageService,
