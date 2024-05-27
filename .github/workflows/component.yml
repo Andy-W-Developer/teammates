@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - release
+      - Hkovin-12894-per-recipient-stats-calculated-by-name
   pull_request:
     branches:
       - master
